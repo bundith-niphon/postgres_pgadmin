@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: db_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf  # Mount custom config
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'  # Use custom config
+    networks:
+      - pg_network
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com  # Replace with your email
+      PGADMIN_DEFAULT_PASSWORD: admin  # Replace with a secure password
+    ports:
+      - "8080:80"  # pgAdmin will be accessible on http://localhost:8080
+    depends_on:
+      - postgres
+    networks:
+      - pg_network
+
+volumes:
+  postgres_data:
+    external: true
+    name: 63814c99be1d115e1dadbe6102e34425d9c56900caf2c1fecc1ae37e658d21c8
+networks:
+  pg_network:
+    driver: bridge
